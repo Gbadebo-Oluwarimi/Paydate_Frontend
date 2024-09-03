@@ -1,0 +1,7 @@
+Stack I want to use for this project
+1. Node js
+2. React js
+3. MongoDB / mongoose
+4. ShadcnUI
+5. NestJS 
+
