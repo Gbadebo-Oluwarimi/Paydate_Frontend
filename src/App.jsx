@@ -9,7 +9,7 @@ import {
   BrowserRouter,
 } from "react-router-dom";
 import "./App.css";
-import Loginform from "./pages/SignUp";
+import Loginform from "./pages/Login";
 import { Dashboard } from "./pages/AuthPages/Dashboard";
 import SignUpform from "./pages/SignUp";
 
@@ -19,6 +19,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/signup" element={<SignUpform />} />
+        <Route path="/login" element={<Loginform />} />
       </Routes>
     </BrowserRouter>
   );

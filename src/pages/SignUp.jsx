@@ -1,4 +1,6 @@
+import { Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Card,
   CardContent,
@@ -9,20 +11,21 @@ import {
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { useState } from "react";
+import { SignupUser } from "@/Features/Auth/AuthSlice";
 export default function SignUpform() {
   const [username, SetUsername] = useState("");
   const [email, Setemail] = useState("");
   const [password, Setpassword] = useState("");
   const [companyName, SetCompanyname] = useState("");
   // const setUserSignUpdata = useStore((state) => state.sendCreateUserToAPI);
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.auth);
 
   const handleSubmition = async (e) => {
     e.preventDefault();
-    try {
-      console.log(UserStore);
-    } catch (error) {
-      console.error("Error while submitting:", error);
-    }
+
+    dispatch(SignupUser({ username, password, email, companyName }));
+    console.log("Data Successfully sent from the frontend");
   };
   return (
     <Card className="mx-auto max-w-sm mt-20">
@@ -66,6 +69,15 @@ export default function SignUpform() {
               value={password}
             />
           </div>
+          <div className="grid gap-2">
+            <Label htmlFor="password">BusinessName</Label>
+            <Input
+              id="first_name"
+              type=""
+              onChange={(e) => SetCompanyname(e.target.value)}
+              value={companyName}
+            />
+          </div>
           <Button
             type="submit"
             className="w-full"
@@ -79,9 +91,9 @@ export default function SignUpform() {
         </div>
         <div className="mt-4 text-center text-sm">
           Already have an account?{" "}
-          <a href="#" className="underline">
+          <Link to="/login" className="underline">
             Sign in
-          </a>
+          </Link>
         </div>
       </CardContent>
     </Card>
