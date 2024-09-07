@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -8,8 +9,10 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
+import { useToast } from "../hooks/use-toast";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
+import { toast } from "sonner";
 import { useState } from "react";
 import { SignupUser } from "@/Features/Auth/AuthSlice";
 export default function SignUpform() {
@@ -19,6 +22,7 @@ export default function SignUpform() {
   const [companyName, SetCompanyname] = useState("");
   // const setUserSignUpdata = useStore((state) => state.sendCreateUserToAPI);
   const dispatch = useDispatch();
+  const { toast } = useToast();
   const { loading, error } = useSelector((state) => state.auth);
 
   const handleSubmition = async (e) => {
@@ -27,6 +31,12 @@ export default function SignUpform() {
     dispatch(SignupUser({ username, password, email, companyName }));
     console.log("Data Successfully sent from the frontend");
   };
+  useEffect(() => {
+    if (error) {
+      console.log("HEWWWWW");
+      toast("Event has been created.");
+    }
+  }, [error, toast]);
   return (
     <Card className="mx-auto max-w-sm mt-20">
       <CardHeader>

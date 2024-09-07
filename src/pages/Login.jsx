@@ -16,28 +16,45 @@ import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { loginUser } from "../Features/Auth/AuthSlice";
 import { Toaster } from "@/components/ui/toaster";
+import { useNavigate } from "react-router-dom";
+import { unwrapResult } from "@reduxjs/toolkit";
+import { toast } from "sonner";
 
 export default function Loginform() {
-  const { toast } = useToast();
+  const navigate = useNavigate();
   const [username, setUsername] = useState(""); // Fixed typo in function name
   const [password, setPassword] = useState(""); // Fixed typo in function name
   const dispatch = useDispatch();
-  const { loading, error } = useSelector((state) => state.auth);
+  const { loading, error, isAuthenticated } = useSelector(
+    (state) => state.auth
+  );
 
   const handleSubmission = (e) => {
     // Fixed typo in function name
     e.preventDefault();
-    dispatch(loginUser({ username, password }));
-  };
-
-  useEffect(() => {
-    if (error) {
-      toast({
-        title: "Login Failed",
-        description: error,
-      });
+    try {
+      const resultAction = dispatch(loginUser({ username, password }));
+      console.log(resultAction);
+      const result = unwrapResult(resultAction);
+      console.log(result);
+      if (isAuthenticated) {
+        navigate("/");
+      } else {
+        // Handle login error
+        console.error("Login failed");
+        toast("Login Failed", {
+          variant: "destructive",
+          description: "Incorrect username or password",
+          action: {
+            label: "Undo",
+            onClick: () => console.log("Undo"),
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
     }
-  }, [error, toast]);
+  };
 
   return (
     <Card className="mx-auto max-w-sm mt-20">
