@@ -1,8 +1,6 @@
 "use client";
 import { Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
-import { useToast } from "../hooks/use-toast";
-
 import {
   Card,
   CardContent,
@@ -15,87 +13,96 @@ import { Label } from "../components/ui/label";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { loginUser } from "../Features/Auth/AuthSlice";
-import { Toaster } from "@/components/ui/toaster";
-import { useNavigate } from "react-router-dom";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import { SpinnerInfinity } from "spinners-react";
 
 export default function Loginform() {
   const navigate = useNavigate();
-  const [username, setUsername] = useState(""); // Fixed typo in function name
-  const [password, setPassword] = useState(""); // Fixed typo in function name
   const dispatch = useDispatch();
-  const { loading, error, isAuthenticated } = useSelector(
-    (state) => state.auth
-  );
+  const { loading, isAuthenticated } = useSelector((state) => state.auth);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleSubmission = (e) => {
-    // Fixed typo in function name
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleSubmission = async (e) => {
     e.preventDefault();
+
+    if (!username || !password) {
+      toast("Please fill in all fields", { variant: "destructive" });
+      return;
+    }
+
     try {
-      const resultAction = dispatch(loginUser({ username, password }));
-      console.log(resultAction);
+      const resultAction = await dispatch(loginUser({ username, password }));
       const result = unwrapResult(resultAction);
-      console.log(result);
-      if (isAuthenticated) {
-        navigate("/");
-      } else {
-        // Handle login error
-        console.error("Login failed");
+
+      if (!isAuthenticated) {
         toast("Login Failed", {
           variant: "destructive",
           description: "Incorrect username or password",
-          action: {
-            label: "Undo",
-            onClick: () => console.log("Undo"),
-          },
         });
       }
     } catch (error) {
       console.error("Login failed:", error);
+      toast("Login failed", {
+        variant: "destructive",
+        description: "An error occurred",
+      });
     }
   };
 
-  return (
+  // Conditional rendering based on loading state
+  return loading ? (
+    <div className="flex justify-center items-center h-screen">
+      <SpinnerInfinity
+        size={50}
+        thickness={100}
+        speed={100}
+        color="#36ad47"
+        secondaryColor="rgba(0, 0, 0, 0.44)"
+      />
+    </div>
+  ) : (
     <Card className="mx-auto max-w-sm mt-20">
       <CardHeader>
         <CardTitle className="text-xl">Paydate</CardTitle>
         <CardDescription>Welcome Back User</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-4">
-          <div className="grid grid-cols-1 gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username" // Changed id to match the Label
-                placeholder=""
-                onChange={(e) => setUsername(e.target.value)} // Fixed typo in function name
-                value={username}
-                required
-              />
-            </div>
+        <form onSubmit={handleSubmission} className="grid gap-4">
+          <div className="grid gap-2">
+            <Label htmlFor="username">Username</Label>
+            <Input
+              id="username"
+              name="username"
+              placeholder=""
+              onChange={(e) => setUsername(e.target.value)}
+              value={username}
+              required
+            />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="password">Password</Label>
             <Input
               id="password"
+              name="password"
               type="password"
-              onChange={(e) => setPassword(e.target.value)} // Fixed typo in function name
+              onChange={(e) => setPassword(e.target.value)}
               value={password}
+              required
             />
           </div>
-          <Button
-            type="submit"
-            className="w-full"
-            onClick={(e) => {
-              handleSubmission(e);
-            }} // Fixed typo in function name
-            disabled={loading}
-          >
+          <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Logging in..." : "Login"}
           </Button>
-        </div>
+        </form>
         <div className="mt-4 text-center text-sm">
           Don't have an account?{" "}
           <Link to="/signup" className="underline">

@@ -1,7 +1,7 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -9,34 +9,64 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
-import { useToast } from "../hooks/use-toast";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { toast } from "sonner";
-import { useState } from "react";
 import { SignupUser } from "@/Features/Auth/AuthSlice";
-export default function SignUpform() {
-  const [username, SetUsername] = useState("");
-  const [email, Setemail] = useState("");
-  const [password, Setpassword] = useState("");
-  const [companyName, SetCompanyname] = useState("");
-  // const setUserSignUpdata = useStore((state) => state.sendCreateUserToAPI);
-  const dispatch = useDispatch();
-  const { toast } = useToast();
-  const { loading, error } = useSelector((state) => state.auth);
+import { SpinnerInfinity } from "spinners-react";
 
-  const handleSubmition = async (e) => {
+export default function SignUpform() {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loading, error, isAuthenticated } = useSelector(
+    (state) => state.auth
+  );
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleSubmission = async (e) => {
     e.preventDefault();
 
-    dispatch(SignupUser({ username, password, email, companyName }));
-    console.log("Data Successfully sent from the frontend");
-  };
-  useEffect(() => {
-    if (error) {
-      console.log("HEWWWWW");
-      toast("Event has been created.");
+    if (!username || !email || !password || !companyName) {
+      toast("Please fill in all fields", { variant: "destructive" });
+      return;
     }
-  }, [error, toast]);
+
+    try {
+      await dispatch(SignupUser({ username, password, email, companyName }));
+      if (!error) {
+        navigate("/dashboard");
+      }
+    } catch (err) {
+      toast("User was not created", {
+        variant: "destructive",
+        description: "An error occurred",
+      });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <SpinnerInfinity
+          size={50}
+          thickness={100}
+          speed={100}
+          color="#36ad47"
+          secondaryColor="rgba(0, 0, 0, 0.44)"
+        />
+      </div>
+    );
+  }
+
   return (
     <Card className="mx-auto max-w-sm mt-20">
       <CardHeader>
@@ -46,18 +76,16 @@ export default function SignUpform() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-4">
-          <div className="grid grid-cols-1 gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="first-name">Username</Label>
-              <Input
-                id="first-name"
-                placeholder=""
-                onChange={(e) => SetUsername(e.target.value)}
-                value={username}
-                required
-              />
-            </div>
+        <form onSubmit={handleSubmission} className="grid gap-4">
+          <div className="grid gap-2">
+            <Label htmlFor="username">Username</Label>
+            <Input
+              id="username"
+              placeholder=""
+              onChange={(e) => setUsername(e.target.value)}
+              value={username}
+              required
+            />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
@@ -65,7 +93,7 @@ export default function SignUpform() {
               id="email"
               type="email"
               placeholder="m@example.com"
-              onChange={(e) => Setemail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               value={email}
               required
             />
@@ -75,30 +103,27 @@ export default function SignUpform() {
             <Input
               id="password"
               type="password"
-              onChange={(e) => Setpassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               value={password}
+              required
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="password">BusinessName</Label>
+            <Label htmlFor="companyName">Business Name</Label>
             <Input
-              id="first_name"
-              type=""
-              onChange={(e) => SetCompanyname(e.target.value)}
+              id="companyName"
+              onChange={(e) => setCompanyName(e.target.value)}
               value={companyName}
+              required
             />
           </div>
-          <Button
-            type="submit"
-            className="w-full"
-            onClick={(e) => handleSubmition(e)}
-          >
-            Create an account
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? "Creating account..." : "Create an account"}
           </Button>
           <Button variant="outline" className="w-full">
             Sign up with Google
           </Button>
-        </div>
+        </form>
         <div className="mt-4 text-center text-sm">
           Already have an account?{" "}
           <Link to="/login" className="underline">

@@ -19,10 +19,25 @@ import {
 import { Input } from "../../components/ui/input";
 import Nav from "../AuthComponents/Nav";
 import Navmin from "../AuthComponents/Navmin";
+import { useNavigate } from "react-router-dom";
 import Maincontent from "../AuthComponents/Maincontent";
 import Sidebar from "../AuthComponents/Sidebar";
-
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { logout, logoutUser } from "../../Features/Auth/AuthSlice";
 export function Dashboard() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { loading, isAuthenticated, user } = useSelector((state) => state.auth);
+  const handleLogout = async () => {
+    try {
+      await dispatch(logoutUser()).unwrap();
+      dispatch(logout()); // Clear local state
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <Nav />
@@ -33,7 +48,7 @@ export function Dashboard() {
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <a href="#">Dashboard</a>
+                  <a href="#">{user.username.toUpperCase()} Dashboard</a>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
@@ -78,7 +93,7 @@ export function Dashboard() {
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuItem>Support</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
