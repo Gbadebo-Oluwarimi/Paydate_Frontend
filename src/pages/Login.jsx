@@ -36,24 +36,34 @@ export default function Loginform() {
 
     if (!username || !password) {
       toast("Please fill in all fields", { variant: "destructive" });
-      return;
+      return; // Exit early if input fields are not filled
     }
 
     try {
+      // Dispatch login action
       const resultAction = await dispatch(loginUser({ username, password }));
+      console.log(resultAction);
       const result = unwrapResult(resultAction);
-
-      if (!isAuthenticated) {
-        toast("Login Failed", {
+      console.log(result);
+      if (result.username == username) {
+        navigate("/dashboard");
+        toast("Login Successfull ✅✅✅ ", {
           variant: "destructive",
-          description: "Incorrect username or password",
+          description: `Welcome back ${username}`,
+        });
+      } else {
+        console.log(result.success);
+        // Show toast message if login failed
+        toast("Login Failed ❌❌", {
+          variant: "destructive",
+          description: result.message || "Incorrect username or password",
         });
       }
     } catch (error) {
       console.error("Login failed:", error);
-      toast("Login failed", {
+      toast("An Error Occurred", {
         variant: "destructive",
-        description: "An error occurred",
+        description: "A drastic error occurred",
       });
     }
   };
