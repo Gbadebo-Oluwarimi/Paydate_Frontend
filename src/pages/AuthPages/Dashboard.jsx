@@ -21,10 +21,12 @@ import Nav from "../AuthComponents/Nav";
 import Navmin from "../AuthComponents/Navmin";
 import { useNavigate } from "react-router-dom";
 import Maincontent from "../AuthComponents/Maincontent";
+import { toast } from "sonner";
 import Sidebar from "../AuthComponents/Sidebar";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { logout, logoutUser } from "../../Features/Auth/AuthSlice";
+import NewClient from "../AuthComponents/NewClient";
 export function Dashboard() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -34,12 +36,16 @@ export function Dashboard() {
       await dispatch(logoutUser()).unwrap();
       dispatch(logout()); // Clear local state
       navigate("/login");
+      toast(`${user.username} Successfully logged out`, {
+        description: "Take a Break....",
+      });
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
+      <NewClient />
       <Nav />
       <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
         <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
@@ -78,17 +84,24 @@ export function Dashboard() {
                 size="icon"
                 className="overflow-hidden rounded-full"
               >
-                <img
-                  src="/placeholder-user.jpg"
-                  width={36}
-                  height={36}
-                  alt="Avatar"
-                  className="overflow-hidden rounded-full"
-                />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="size-6"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                  />
+                </svg>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuLabel> {user.username}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuItem>Support</DropdownMenuItem>

@@ -23,6 +23,7 @@ import {
   Users2,
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
+import { Link } from "react-router-dom";
 const Navmin = () => {
   return (
     <div>
@@ -51,7 +52,7 @@ const Navmin = () => {
             </a>
             <a
               href="#"
-              className="flex items-center gap-4 px-2.5 text-foreground"
+              className="flex items-center gap-4 px-2.5 text-muted-foreground"
             >
               <ShoppingCart className="h-5 w-5" />
               Orders
@@ -63,13 +64,13 @@ const Navmin = () => {
               <Package className="h-5 w-5" />
               Products
             </a>
-            <a
-              href="#"
+            <Link
+              to="/Clients"
               className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
             >
               <Users2 className="h-5 w-5" />
               Customers
-            </a>
+            </Link>
             <a
               href="#"
               className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"

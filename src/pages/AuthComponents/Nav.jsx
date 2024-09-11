@@ -24,6 +24,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "../../components/ui/tooltip";
+import { Link } from "react-router-dom";
 const Nav = () => {
   return (
     <div>
@@ -39,13 +40,13 @@ const Nav = () => {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <a
-                  href="#"
+                <Link
+                  to="/dashboard"
                   className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                 >
                   <Home className="h-5 w-5" />
                   <span className="sr-only">Dashboard</span>
-                </a>
+                </Link>
               </TooltipTrigger>
               <TooltipContent side="right">Dashboard</TooltipContent>
             </Tooltip>
@@ -81,13 +82,13 @@ const Nav = () => {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <a
-                  href="#"
+                <Link
+                  to="/Client"
                   className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                 >
                   <Users2 className="h-5 w-5" />
                   <span className="sr-only">Customers</span>
-                </a>
+                </Link>
               </TooltipTrigger>
               <TooltipContent side="right">Customers</TooltipContent>
             </Tooltip>

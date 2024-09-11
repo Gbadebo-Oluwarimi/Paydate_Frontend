@@ -2,10 +2,10 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{js,jsx}',
-    './components/**/*.{js,jsx}',
-    './app/**/*.{js,jsx}',
-    './src/**/*.{js,jsx}',
+    "./pages/**/*.{js,jsx}",
+    "./components/**/*.{js,jsx}",
+    "./app/**/*.{js,jsx}",
+    "./src/**/*.{js,jsx}",
   ],
   prefix: "",
   theme: {
@@ -17,6 +17,61 @@ module.exports = {
       },
     },
     extend: {
+      backdropBlur: {
+        xs: "2px",
+        sm: "4px",
+        md: "8px",
+        lg: "12px",
+        xl: "16px",
+        "2xl": "24px",
+      },
+      backdropBrightness: {
+        DEFAULT: "brightness(1)",
+        0: "brightness(0)",
+        50: "brightness(0.5)",
+        150: "brightness(1.5)",
+      },
+      backdropContrast: {
+        DEFAULT: "contrast(1)",
+        0: "contrast(0)",
+        50: "contrast(0.5)",
+        200: "contrast(2)",
+      },
+      backdropGrayscale: {
+        DEFAULT: "grayscale(0)",
+        0: "grayscale(0)",
+        100: "grayscale(1)",
+      },
+      backdropHueRotate: {
+        DEFAULT: "hue-rotate(0deg)",
+        0: "hue-rotate(0deg)",
+        15: "hue-rotate(15deg)",
+        30: "hue-rotate(30deg)",
+        60: "hue-rotate(60deg)",
+        90: "hue-rotate(90deg)",
+      },
+      backdropInvert: {
+        DEFAULT: "invert(0)",
+        0: "invert(0)",
+        100: "invert(1)",
+      },
+      backdropOpacity: {
+        DEFAULT: "opacity(1)",
+        0: "opacity(0)",
+        50: "opacity(0.5)",
+        100: "opacity(1)",
+      },
+      backdropSaturate: {
+        DEFAULT: "saturate(1)",
+        0: "saturate(0)",
+        50: "saturate(0.5)",
+        150: "saturate(1.5)",
+      },
+      backdropSepia: {
+        DEFAULT: "sepia(0)",
+        0: "sepia(0)",
+        100: "sepia(1)",
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -73,5 +128,10 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
-}
+  plugins: [
+    require("tailwindcss-animate"),
+    require("@tailwindcss/forms"),
+    require("@tailwindcss/typography"),
+    require("@tailwindcss/aspect-ratio"),
+  ],
+};

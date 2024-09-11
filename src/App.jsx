@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { checkSession } from "./Features/Auth/AuthSlice";
 import { Progress } from "./components/ui/progress";
 import { SpinnerInfinity } from "spinners-react";
+import { DataTableDemo } from "./pages/AuthPages/UserClient";
 
 function App() {
   const { isAuthenticated, loading } = useSelector((state) => state.auth);
@@ -23,6 +24,7 @@ function App() {
       dispatch(checkSession()); // Dispatch a thunk to verify the session
     }
   }, [dispatch]);
+
   if (loading) {
     // Optionally render a loading spinner or placeholder while checking auth
     return (
@@ -42,6 +44,7 @@ function App() {
         <Route>
           <Route element={<PrivateRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/Client" element={<DataTableDemo />} />
           </Route>
           <Route
             path="/signup"
