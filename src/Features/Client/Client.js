@@ -52,6 +52,24 @@ export const getUserClient = createAsyncThunk(
   }
 );
 
+export const deleteClient = createAsyncThunk(
+  "client/deleteClient",
+  async (clientId, thunkAPI) => {
+    try {
+      await axios.delete(
+        `http://localhost:3002/user/delete_client/${clientId}`,
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(clientId, "client deleted");
+      return clientId;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  }
+);
+
 // Slice for creating a client
 const createClientSlice = createSlice({
   name: "client",
@@ -85,23 +103,39 @@ const getClientSlice = createSlice({
   name: "getclient",
   initialState: {
     clients: [],
-    loading: false,
+    clients_length: null,
+    loading_client: false,
     error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(getUserClient.pending, (state) => {
-        state.loading = true;
+        state.loading_client = true;
         state.error = null;
       })
       .addCase(getUserClient.fulfilled, (state, action) => {
         state.clients = action.payload;
-        state.loading = false;
+        state.clients_length = action.payload.length;
+        state.loading_client = false;
       })
       .addCase(getUserClient.rejected, (state, action) => {
-        state.loading = false;
+        state.loading_client = false;
         state.error = action.payload?.message;
+      })
+      .addCase(deleteClient.pending, (state) => {
+        state.loading_client = true;
+        state.error = null;
+      })
+      .addCase(deleteClient.fulfilled, (state, action) => {
+        state.clients = state.clients.filter(
+          (client) => client._id !== action.payload
+        );
+        state.loading_client = false;
+      })
+      .addCase(deleteClient.rejected, (state, action) => {
+        state.loading_client = false;
+        state.error = action.payload.message;
       });
   },
 });

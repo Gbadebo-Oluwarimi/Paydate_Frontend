@@ -1,4 +1,5 @@
 import { Search } from "lucide-react";
+import React from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,6 +9,7 @@ import {
   BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb";
 import { Button } from "../../components/ui/button";
+import { useEffect } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,16 +29,25 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { logout, logoutUser } from "../../Features/Auth/AuthSlice";
 import NewClient from "../AuthComponents/NewClient";
+import { getUserClient } from "@/Features/Client/Client";
 export function Dashboard() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const { loading, isAuthenticated, user } = useSelector((state) => state.auth);
+  const { clients, loading_client, error } = useSelector(
+    (state) => state.Client
+  );
+
+  React.useEffect(() => {
+    dispatch(getUserClient());
+  }, [dispatch]);
   const handleLogout = async () => {
     try {
       await dispatch(logoutUser()).unwrap();
       dispatch(logout()); // Clear local state
       navigate("/login");
-      toast(`${user.username} Successfully logged out`, {
+      toast.success(`${user.username} Successfully logged out`, {
         description: "Take a Break....",
       });
     } catch (error) {

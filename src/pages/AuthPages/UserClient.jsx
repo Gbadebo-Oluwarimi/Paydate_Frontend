@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -7,11 +7,23 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { SpinnerInfinity } from "spinners-react";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
-import { useSelector, useDispatch } from "react-redux";
-import { getUserClient } from "../../Features/Client/Client"; // Import the action to fetch clients
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { SpinnerInfinity } from "spinners-react";
+import { ArrowUpDown, ChevronDown, MoreHorizontal, Trash } from "lucide-react";
+import { useSelector, useDispatch } from "react-redux";
+import { getUserClient, deleteClient } from "../../Features/Client/Client";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
@@ -35,107 +47,158 @@ import Navmin from "../AuthComponents/Navmin";
 import { CardDescription, CardTitle } from "@/components/ui/card";
 import Nav from "../AuthComponents/Nav";
 
-// Define table columns
-export const columns = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "ClientName",
-    header: "Name",
-    cell: ({ row }) => <div>{row.getValue("ClientName")}</div>,
-  },
-  {
-    accessorKey: "ClientEmail",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Email
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => (
-      <div className="lowercase">{row.getValue("ClientEmail")}</div>
-    ),
-  },
-  {
-    accessorKey: "ClientContact",
-    header: "Contact",
-    cell: ({ row }) => <div>{row.getValue("ClientContact")}</div>,
-  },
-  {
-    accessorKey: "ClientAddress",
-    header: "Address",
-    cell: ({ row }) => <div>{row.getValue("ClientAddress")}</div>,
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const client = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(client.ClientEmail)}
-            >
-              Copy Email
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
-
 export function DataTableDemo() {
   const dispatch = useDispatch();
-  const { clients, loading, error } = useSelector((state) => state.getClient); // Use getClient slice
+  const { clients, loading, error } = useSelector((state) => state.getClient);
 
   const [sorting, setSorting] = React.useState([]);
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [selectedClient, setSelectedClient] = React.useState(null); // Track the selected client for deletion
 
-  // Fetch clients when the component mounts
   React.useEffect(() => {
     dispatch(getUserClient());
   }, [dispatch]);
 
-  // Setup table instance
+  const handleDeleteClient = async (clientId) => {
+    try {
+      await dispatch(deleteClient(clientId)).unwrap();
+      toast.success("Client deleted successfully!");
+    } catch (err) {
+      toast.error("Failed to delete client.");
+    }
+    setSelectedClient(null); // Close dialog after deletion
+  };
+
+  // Define table columns
+  const columns = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "ClientName",
+      header: "Name",
+      cell: ({ row }) => <div>{row.getValue("ClientName")}</div>,
+    },
+    {
+      accessorKey: "ClientEmail",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Email
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => (
+        <div className="lowercase">{row.getValue("ClientEmail")}</div>
+      ),
+    },
+    {
+      accessorKey: "ClientContact",
+      header: "Contact",
+      cell: ({ row }) => <div>{row.getValue("ClientContact")}</div>,
+    },
+    {
+      accessorKey: "ClientAddress",
+      header: "Address",
+      cell: ({ row }) => <div>{row.getValue("ClientAddress")}</div>,
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const client = row.original;
+        const handleCopyEmail = (email) => {
+          navigator.clipboard.writeText(email);
+          toast.success("Email copied to clipboard!");
+        };
+
+        return (
+          <>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() => handleCopyEmail(client.ClientEmail)}
+                >
+                  Copy Email
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>View details</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => setSelectedClient(client)} // Open the dialog for this client
+                  className="flex items-center"
+                >
+                  <Trash className="mr-2 h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Delete Confirmation Dialog */}
+            {selectedClient && selectedClient._id === client._id && (
+              <AlertDialog
+                open={true}
+                onOpenChange={() => setSelectedClient(null)}
+              >
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. Do you really want to delete{" "}
+                      <strong>{client.ClientName}</strong>?
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel onClick={() => setSelectedClient(null)}>
+                      Cancel
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => handleDeleteClient(client._id)}
+                    >
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+          </>
+        );
+      },
+    },
+  ];
+
   const table = useReactTable({
-    data: clients || [], // Use clients from Redux store
+    data: clients || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -168,14 +231,12 @@ export function DataTableDemo() {
   }
 
   if (error) {
-    return <div>Error: {error}</div>; // Show error message
+    return <div>Error: {error}</div>;
   }
 
-  // Main component render
   return (
     <div>
       <Nav />
-
       <div className="m-auto w-[800px] mt-10 md:px-0 px-10">
         <Navmin />
         <CardTitle className="mb-2 mt-2">List of Clients</CardTitle>
@@ -203,20 +264,18 @@ export function DataTableDemo() {
               {table
                 .getAllColumns()
                 .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
+                .map((column) => (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    className="capitalize"
+                    checked={column.getIsVisible()}
+                    onCheckedChange={(value) =>
+                      column.toggleVisibility(!!value)
+                    }
+                  >
+                    {column.id}
+                  </DropdownMenuCheckboxItem>
+                ))}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -225,18 +284,16 @@ export function DataTableDemo() {
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
-                    );
-                  })}
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  ))}
                 </TableRow>
               ))}
             </TableHeader>
@@ -263,7 +320,7 @@ export function DataTableDemo() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    No Clients
                   </TableCell>
                 </TableRow>
               )}

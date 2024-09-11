@@ -44,14 +44,18 @@ export default function SignUpform() {
       await dispatch(SignupUser({ username, password, email, companyName }));
       if (!error) {
         navigate("/dashboard");
-        toast(`${username} Created Successfully 🎉🎉🎉`, {
+        toast.success(`${username} Created Successfully 🎉🎉🎉`, {
           description: "Welcome Aboard this ship 😊",
         });
       }
     } catch (err) {
-      toast("User was not created ❌", {
-        variant: "destructive",
-        description: "An error occurred",
+      toast.error("An Error Occurred", {
+        description: "User was not created ",
+        icon: "ℹ️", // You can use an info icon here
+        style: {
+          backgroundColor: "#3182ce", // Blue background for info
+          color: "white",
+        },
       });
     }
   };

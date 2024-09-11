@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "../../components/ui/select";
 import { unwrapResult } from "@reduxjs/toolkit";
-import { createClient } from "../../Features/Client/Client";
+import { createClient, getUserClient } from "../../Features/Client/Client";
 const NewClient = () => {
   const [ClientAddress, setClientAddress] = useState("");
   const [ClientName, setClientName] = useState("");
@@ -46,7 +46,7 @@ const NewClient = () => {
       !ClientEmail ||
       !ClientName
     ) {
-      toast("Please fill in all fields", { variant: "destructive" });
+      toast.error("Please fill in all fields", { variant: "destructive" });
       return; // Exit early if input fields are not filled
     }
 
@@ -66,18 +66,19 @@ const NewClient = () => {
       console.log(result, "djdj");
       if (result) {
         dispatch(closePopup());
-        toast(`${result.ClientName} created Successfully ✅ `, {
+        dispatch(getUserClient());
+        toast.success(`${result.ClientName} created Successfully `, {
           description: `User was added to the database`,
         });
       } else {
         // Show toast message if login failed
-        toast("user was not created  ❌❌", {
+        toast.error("user was not created  ❌❌", {
           variant: "destructive",
           description: result.message,
         });
       }
     } catch (error) {
-      toast("An Error Occurred", {
+      toast.error("An Error Occurred", {
         variant: "destructive",
         description: "A drastic error occurred",
       });

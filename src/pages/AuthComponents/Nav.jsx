@@ -24,8 +24,12 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "../../components/ui/tooltip";
+import { useLocation } from "react-router-dom";
+
 import { Link } from "react-router-dom";
 const Nav = () => {
+  const location = useLocation();
+  const currentPath = location.pathname;
   return (
     <div>
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
@@ -42,7 +46,11 @@ const Nav = () => {
               <TooltipTrigger asChild>
                 <Link
                   to="/dashboard"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8 ${
+                    currentPath === "/dashboard"
+                      ? "text-foreground bg-accent"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   <Home className="h-5 w-5" />
                   <span className="sr-only">Dashboard</span>
@@ -56,7 +64,11 @@ const Nav = () => {
               <TooltipTrigger asChild>
                 <a
                   href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8 ${
+                    currentPath === "#"
+                      ? "text-foreground bg-accent"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   <ShoppingCart className="h-5 w-5" />
                   <span className="sr-only">Orders</span>
@@ -84,7 +96,11 @@ const Nav = () => {
               <TooltipTrigger asChild>
                 <Link
                   to="/Client"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8 ${
+                    currentPath === "/Client"
+                      ? "text-foreground bg-accent"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   <Users2 className="h-5 w-5" />
                   <span className="sr-only">Customers</span>

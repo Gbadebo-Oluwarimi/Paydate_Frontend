@@ -47,21 +47,20 @@ export default function Loginform() {
       console.log(result);
       if (result.username == username) {
         navigate("/dashboard");
-        toast("Login Successfull ✅✅✅ ", {
+        toast.success("Login Successfull ✅✅✅ ", {
           variant: "destructive",
           description: `Welcome back ${username}`,
         });
       } else {
         console.log(result.success);
         // Show toast message if login failed
-        toast("Login Failed ❌❌", {
-          variant: "destructive",
+        toast.error("Login Failed ❌❌", {
           description: result.message || "Incorrect username or password",
         });
       }
     } catch (error) {
       console.error("Login failed:", error);
-      toast("An Error Occurred", {
+      toast.error("An Error Occurred", {
         variant: "destructive",
         description: "A drastic error occurred",
       });
