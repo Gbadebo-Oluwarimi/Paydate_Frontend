@@ -86,7 +86,9 @@ const Maincontent = () => {
         <Card x-chunk="dashboard-05-chunk-1">
           <CardHeader className="pb-2">
             <CardDescription>Total Client</CardDescription>
-            <CardTitle className="text-4xl">{clients_length}</CardTitle>
+            <CardTitle className="text-4xl">
+              {loading_client ? "--" : clients_length}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-xs text-muted-foreground">

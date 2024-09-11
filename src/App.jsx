@@ -10,6 +10,7 @@ import { checkSession } from "./Features/Auth/AuthSlice";
 import { Progress } from "./components/ui/progress";
 import { SpinnerInfinity } from "spinners-react";
 import { DataTableDemo } from "./pages/AuthPages/UserClient";
+import ClientDetails from "./pages/AuthPages/ClientDetails";
 
 function App() {
   const { isAuthenticated, loading } = useSelector((state) => state.auth);
@@ -45,6 +46,7 @@ function App() {
           <Route element={<PrivateRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/Client" element={<DataTableDemo />} />
+            <Route path="/client_details/:id" element={<ClientDetails />} />
           </Route>
           <Route
             path="/signup"

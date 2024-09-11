@@ -70,6 +70,25 @@ export const deleteClient = createAsyncThunk(
   }
 );
 
+export const getIndividualClient = createAsyncThunk(
+  "client/getIndividualClient",
+  async (clientId, thunkAPI) => {
+    console.log("Thunk ran with clientId:", clientId);
+    try {
+      const response = await axios.get(
+        `http://localhost:3002/user/client/${clientId}`,
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(response, "client successfully gotten");
+      return response.data.client; // Ensure you're returning response.data
+    } catch (error) {
+      console.error("Error fetching client:", error);
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
 // Slice for creating a client
 const createClientSlice = createSlice({
   name: "client",
@@ -139,9 +158,36 @@ const getClientSlice = createSlice({
       });
   },
 });
+const getIndividualClientSlice = createSlice({
+  name: "getIndividualClient",
+  initialState: {
+    client: {},
+    isAuthenticated: false,
+    loading_client: false,
+    error: null,
+  },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(getIndividualClient.pending, (state) => {
+        state.loading_client = true;
+        state.error = null;
+      })
+      .addCase(getIndividualClient.fulfilled, (state, action) => {
+        console.log(action.payload, "ddd");
+        state.client = action.payload;
+        state.loading_client = false;
+      })
+      .addCase(getIndividualClient.rejected, (state, action) => {
+        state.loading_client = false;
+        state.error = action.payload;
+      });
+  },
+});
 
 // Default export for the createClient slice
 export default createClientSlice.reducer;
 
-// Named export for the getClient slice
+// Named export for the getClient slice && getIndividualCLient slice
 export const getClientReducer = getClientSlice.reducer;
+export const getIndividualClientReducer = getIndividualClientSlice.reducer;

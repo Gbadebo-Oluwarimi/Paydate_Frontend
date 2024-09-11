@@ -35,13 +35,7 @@ export function Dashboard() {
   const navigate = useNavigate();
 
   const { loading, isAuthenticated, user } = useSelector((state) => state.auth);
-  const { clients, loading_client, error } = useSelector(
-    (state) => state.Client
-  );
 
-  React.useEffect(() => {
-    dispatch(getUserClient());
-  }, [dispatch]);
   const handleLogout = async () => {
     try {
       await dispatch(logoutUser()).unwrap();

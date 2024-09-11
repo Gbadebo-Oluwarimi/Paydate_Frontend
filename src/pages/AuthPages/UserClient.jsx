@@ -46,6 +46,7 @@ import {
 import Navmin from "../AuthComponents/Navmin";
 import { CardDescription, CardTitle } from "@/components/ui/card";
 import Nav from "../AuthComponents/Nav";
+import { Link } from "react-router-dom";
 
 export function DataTableDemo() {
   const dispatch = useDispatch();
@@ -152,7 +153,9 @@ export function DataTableDemo() {
                   Copy Email
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>View details</DropdownMenuItem>
+                <Link to={`/client_details/${client._id}`}>
+                  <DropdownMenuItem>View details</DropdownMenuItem>
+                </Link>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={() => setSelectedClient(client)} // Open the dialog for this client
