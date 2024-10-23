@@ -5,6 +5,10 @@ import clientReducer, {
   getIndividualClientReducer,
 } from "./Features/Client/Client";
 import { getClientReducer } from "./Features/Client/Client";
+import {
+  getIndividualClientInvoiceReducer,
+  createIndividualclientInvoiceReducer,
+} from "./Features/Client/ClientInvoice";
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -12,5 +16,7 @@ export const store = configureStore({
     Client: clientReducer,
     getClient: getClientReducer,
     getindividual: getIndividualClientReducer,
+    createClientinvoice: createIndividualclientInvoiceReducer,
+    getclientInvoice: getIndividualClientInvoiceReducer,
   },
 });

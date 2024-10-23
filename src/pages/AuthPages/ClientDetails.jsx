@@ -33,44 +33,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { getIndividualClientInvoices } from "@/Features/Client/ClientInvoice";
 
-const invoiceItems = [
-  {
-    id: "INV-001",
-    description: "Consultation Services",
-    quantity: 10,
-    unitPrice: 150,
-    total: 1500,
-  },
-  {
-    id: "INV-002",
-    description: "Project Planning",
-    quantity: 1,
-    unitPrice: 2000,
-    total: 2000,
-  },
-  {
-    id: "INV-003",
-    description: "Design and Architecture",
-    quantity: 1,
-    unitPrice: 5000,
-    total: 5000,
-  },
-  {
-    id: "INV-004",
-    description: "Construction Materials",
-    quantity: 1,
-    unitPrice: 15000,
-    total: 15000,
-  },
-  {
-    id: "INV-005",
-    description: "Labor Costs",
-    quantity: 1,
-    unitPrice: 10000,
-    total: 10000,
-  },
-];
+const invoiceItems = [];
 const ClientDetails = () => {
   const totalAmount = invoiceItems.reduce((sum, item) => sum + item.total, 0);
   const { id } = useParams();
@@ -78,8 +43,11 @@ const ClientDetails = () => {
   const { client, loading_client, error } = useSelector(
     (state) => state.getindividual
   );
+  const { clientInvoices, loading_client_invoices, Individual_Invoice_error } =
+    useSelector((state) => state.getclientInvoice);
   React.useEffect(() => {
-    dispatch(getIndividualClient(id));
+    dispatch(getIndividualClientInvoices(id)),
+      dispatch(getIndividualClient(id));
   }, [dispatch]);
   return (
     <div className="min-h-screen bg-gray-100 p-8">
@@ -95,10 +63,10 @@ const ClientDetails = () => {
 
             <div className="flex items-center space-x-2">
               <Button variant="outline" size="sm">
-                Manage
+                View User Data
               </Button>
               <Button variant="outline" size="sm">
-                Share
+                View Receipts
               </Button>
               <Button variant="ghost" size="sm">
                 <MoreHorizontal className="h-4 w-4" />
@@ -110,9 +78,9 @@ const ClientDetails = () => {
             <Avatar className="h-24 w-24 rounded-lg">
               <AvatarImage
                 src="/placeholder.svg?height=96&width=96"
-                alt="House Spectrum Ltd"
+                alt={client.clientName}
               />
-              <AvatarFallback>HS</AvatarFallback>
+              <AvatarFallback>GO</AvatarFallback>
             </Avatar>
             <div>
               <h1 className="text-3xl font-bold mb-2">{client.ClientName}</h1>
@@ -187,7 +155,7 @@ const ClientDetails = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {invoiceItems.map((item) => (
+                {clientInvoices.map((item) => (
                   <TableRow key={item.id} className="hover:bg-gray-50">
                     <TableCell className="font-medium">{item.id}</TableCell>
                     <TableCell>{item.description}</TableCell>

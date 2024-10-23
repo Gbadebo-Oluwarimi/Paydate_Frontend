@@ -196,7 +196,7 @@ const Maincontent = () => {
                   </TableRow>
                   <TableRow>
                     <TableCell>
-                      <div className="font-medium">Emma Brown</div>
+                      <div className="font-medium">User ClientDetails</div>
                       <div className="hidden text-sm text-muted-foreground md:inline">
                         emma@example.com
                       </div>
